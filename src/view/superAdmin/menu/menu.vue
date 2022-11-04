@@ -71,15 +71,24 @@
         label-position="top"
         label-width="85px"
       >
-        <el-form-item label="路由Name" prop="path" style="width:30%">
+        <el-form-item label="展示名称" prop="menuIcon" style="width:30%">
+          <el-input v-model="form.name" autocomplete="off" />
+        </el-form-item>
+        <el-form-item label="图标" prop="menuIcon" style="width:30%">
+          <icon :meta="form.menuIcon" style="width:100%" />
+        </el-form-item>
+        <el-form-item label="排序标记" prop="sort" style="width:30%">
+          <el-input v-model.number="form.sort" autocomplete="off" />
+        </el-form-item>
+        <el-form-item label="路由Path" prop="menuUri" style="width:30%">
           <el-input
-            v-model="form.name"
+            v-model="form.menuUri"
             autocomplete="off"
             placeholder="唯一英文字符串"
             @change="changeName"
           />
         </el-form-item>
-        <el-form-item prop="path" style="width:30%">
+        <!-- <el-form-item prop="path" style="width:30%">
           <template #label>
             <div style="display:inline-flex">
               路由Path
@@ -93,13 +102,13 @@
             autocomplete="off"
             placeholder="建议只在后方拼接参数"
           />
-        </el-form-item>
-        <el-form-item label="是否隐藏" style="width:30%">
+        </el-form-item> -->
+        <!-- <el-form-item label="是否隐藏" style="width:30%">
           <el-select v-model="form.hidden" placeholder="是否在列表隐藏">
             <el-option :value="false" label="否" />
             <el-option :value="true" label="是" />
           </el-select>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item label="父节点ID" style="width:30%">
           <el-cascader
             v-model="form.parentId"
@@ -111,19 +120,11 @@
             filterable
           />
         </el-form-item>
-        <el-form-item label="文件路径" prop="component" style="width:60%">
+        <!-- <el-form-item label="文件路径" prop="component" style="width:60%">
           <el-input v-model="form.component" autocomplete="off" placeholder="页面:view/xxx/xx.vue 插件:plugin/xx/xx.vue" @blur="fmtComponent" />
           <span style="font-size:12px;margin-right:12px;">如果菜单包含子菜单，请创建router-view二级路由页面或者</span><el-button style="margin-top:4px" size="small" @click="form.component = 'view/routerHolder.vue'">点我设置</el-button>
         </el-form-item>
-        <el-form-item label="展示名称" prop="meta.title" style="width:30%">
-          <el-input v-model="form.meta.title" autocomplete="off" />
-        </el-form-item>
-        <el-form-item label="图标" prop="meta.icon" style="width:30%">
-          <icon :meta="form.meta" style="width:100%" />
-        </el-form-item>
-        <el-form-item label="排序标记" prop="sort" style="width:30%">
-          <el-input v-model.number="form.sort" autocomplete="off" />
-        </el-form-item>
+
         <el-form-item prop="meta.activeName" style="width:30%">
           <template #label>
             <div>
@@ -161,9 +162,9 @@
             <el-option :value="false" label="否" />
             <el-option :value="true" label="是" />
           </el-select>
-        </el-form-item>
+        </el-form-item> -->
       </el-form>
-      <div>
+      <!-- <div>
         <el-button
           size="small"
           type="primary"
@@ -242,7 +243,7 @@
             </template>
           </el-table-column>
         </el-table>
-      </div>
+      </div> -->
       <template #footer>
         <div class="dialog-footer">
           <el-button size="small" @click="closeDialog">取 消</el-button>
@@ -284,8 +285,8 @@ const tableData = ref([])
 const searchInfo = ref({})
 // 查询
 const getTableData = async() => {
-  const table = await getMenuList({ page: page.value, pageSize: pageSize.value, ...searchInfo.value })
-  if (table.code === 0) {
+  const table = await getMenuList({ pageNum: page.value, pageSize: pageSize.value, ...searchInfo.value })
+  if (table.code === 200) {
     tableData.value = table.data.list
     total.value = table.data.total
     page.value = table.data.page
@@ -342,22 +343,13 @@ const deleteBtn = async(btns, index) => {
 
 const form = ref({
   ID: 0,
-  path: '',
+  menuIcon: '',
+  menuUri: '',
   name: '',
-  hidden: false,
   parentId: '',
-  component: '',
-  meta: {
-    activeName: '',
-    title: '',
-    icon: '',
-    defaultMenu: false,
-    closeTab: false,
-    keepAlive: false
-  },
-  parameters: [],
-  menuBtn: []
+  sort: ''
 })
+
 const changeName = () => {
   form.value.path = form.value.name
 }
@@ -375,7 +367,7 @@ const deleteMenu = (ID) => {
   })
     .then(async() => {
       const res = await deleteBaseMenu({ ID })
-      if (res.code === 0) {
+      if (res.code === 200) {
         ElMessage({
           type: 'success',
           message: '删除成功!'
@@ -401,18 +393,11 @@ const initForm = () => {
   menuForm.value.resetFields()
   form.value = {
     ID: 0,
-    path: '',
+    menuIcon: '',
+    menuUri: '',
     name: '',
-    hidden: false,
     parentId: '',
-    component: '',
-    meta: {
-      title: '',
-      icon: '',
-      defaultMenu: false,
-      closeTab: false,
-      keepAlive: false
-    }
+    sort: '',
   }
 }
 // 关闭弹窗
@@ -424,6 +409,7 @@ const closeDialog = () => {
 }
 // 添加menu
 const enterDialog = async() => {
+  console.log(form.value)
   menuForm.value.validate(async valid => {
     if (valid) {
       let res
@@ -432,7 +418,7 @@ const enterDialog = async() => {
       } else {
         res = await addBaseMenu(form.value)
       }
-      if (res.code === 0) {
+      if (res.code === 200) {
         ElMessage({
           type: 'success',
           message: isEdit.value ? '编辑成功' : '添加成功!'

@@ -2,10 +2,10 @@
   <div>
     <span class="gva-icon" style="position: absolute; z-index: 9999; padding: 3px 10px 0; ">
       <el-icon>
-        <component :is="metaData.icon" />
+        <component :is="metaData" />
       </el-icon>
     </span>
-    <el-select v-model="metaData.icon" style="width:100%" clearable filterable class="gva-select" placeholder="请选择">
+    <el-select v-model="metaData" style="width:100%" clearable filterable class="gva-select" placeholder="请选择">
       <el-option
         v-for="item in options"
         :key="item.key"
@@ -24,15 +24,15 @@
   </div>
 </template>
 
-<script setup>
-import { ref, reactive } from 'vue'
+<script setup name="Icon">
+import { shallowRef, reactive } from 'vue'
 
 const props = defineProps({
-  meta: {
+  menuIcon: {
     default: function() {
-      return {}
+      return ''
     },
-    type: Object,
+    type: String,
   },
 })
 
@@ -1158,16 +1158,10 @@ const options = reactive([
     'label': 'wind-power',
   },
 ])
-
-const metaData = ref(props.meta)
-if (!metaData.value.icon) {
-  metaData.value.icon = options[0].label
-}
-</script>
-
-<script>
-export default {
-  name: 'Icon',
+debugger
+const metaData = shallowRef(props.menuIcon)
+if (!metaData.value) {
+  metaData.value = options[0].label
 }
 </script>
 

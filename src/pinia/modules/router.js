@@ -3,6 +3,7 @@ import { emitter } from '@/utils/bus.js'
 import { asyncMenu } from '@/api/menu'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import { useUserStore } from './user'
 
 const routerListArr = []
 const notLayoutRouterArr = []
@@ -281,7 +282,10 @@ export const useRouterStore = defineStore('router', () => {
       },
       children: []
     }]
-    const cc = await asyncMenu()
+    const res = await asyncMenu()
+    const userStore = useUserStore()
+    userStore.ResetUserInfo(res.data)
+
     // 后续再加
     const asyncRouter = temp_json
     asyncRouter && asyncRouter.push({

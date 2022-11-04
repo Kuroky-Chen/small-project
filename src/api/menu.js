@@ -17,8 +17,8 @@ export const asyncMenu = () => {
 // @Router /menu/getMenuList [post]
 export const getMenuList = (data) => {
   return service({
-    url: '/menu/getMenuList',
-    method: 'post',
+    url: '/menu/list',
+    method: 'get',
     data
   })
 }
@@ -29,7 +29,7 @@ export const getMenuList = (data) => {
 // @Router /menu/getMenuList [post]
 export const addBaseMenu = (data) => {
   return service({
-    url: '/menu/addBaseMenu',
+    url: '/menu/add',
     method: 'post',
     data
   })
