@@ -11,6 +11,7 @@ const whiteList = ['Login', 'Init']
 const getRouter = async(userStore) => {
   const routerStore = useRouterStore()
   await routerStore.SetAsyncRouter()
+  debugger
   // await userStore.GetUserInfo()
   const asyncRouters = routerStore.asyncRouters
   asyncRouters.forEach(asyncRouter => {

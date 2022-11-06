@@ -272,7 +272,7 @@ export const useRouterStore = defineStore('router', () => {
       'parameters': [],
       'btns': null
     }]
-    console.log(temp_json)
+    
     const baseRouter = [{
       path: '/layout',
       name: 'layout',
@@ -284,10 +284,23 @@ export const useRouterStore = defineStore('router', () => {
     }]
     const res = await asyncMenu()
     const userStore = useUserStore()
+    res.data.menuList.forEach(i => {
+      i.path = i.menuUri
+      i.component = `view/${i.menuUri}/index.vue`
+      i.meta = {
+        title: i.name,
+        keepAlive: true
+      }
+      i.name = i.menuUri
+    })
+    debugger
+    
     userStore.ResetUserInfo(res.data)
 
     // 后续再加
-    const asyncRouter = temp_json
+    console.log(temp_json)
+    console.log(res.data.menuList)
+    const asyncRouter = res.data.menuList
     asyncRouter && asyncRouter.push({
       path: '404',
       name: '404',

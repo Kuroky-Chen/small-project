@@ -1,5 +1,6 @@
 import { login, getUserInfo, setSelfInfo, logout } from '@/api/user'
 import router from '@/router/index'
+
 import { ElLoading, ElMessage } from 'element-plus'
 import { defineStore } from 'pinia'
 import { ref, computed, watch } from 'vue'
@@ -60,19 +61,21 @@ export const useUserStore = defineStore('user', () => {
           type: 'success',
           message: '登录成功'
         })
+        // 用户默认菜单
         result.data.authority = {
-          defaultRouter: 'authority'
+          defaultRouter: 'menu'
         }
         setUserInfo(result.data)
         setToken(result.data.token)
         const routerStore = useRouterStore()
         await routerStore.SetAsyncRouter()
+        debugger
         const asyncRouters = routerStore.asyncRouters
         asyncRouters.forEach(asyncRouter => {
           router.addRoute(asyncRouter)
         })
         console.log('当前路由', router.getRoutes())
-        await router.push({ name: userInfo.value.authority.defaultRouter })
+        await router.push({ name: userInfo.value.authority.defaultRouter, replace: true})
         loadingInstance.value.close()
         return true
       }
@@ -112,6 +115,7 @@ export const useUserStore = defineStore('user', () => {
 
   const mode = computed(() => userInfo.value.sideMode)
   const sideMode = computed(() => {
+    !userInfo.value.sideMode && (userInfo.value.sideMode = 'dark')
     if (userInfo.value.sideMode === 'dark') {
       return '#191a23'
     } else if (userInfo.value.sideMode === 'light') {

@@ -76,7 +76,7 @@ export const getMenuAuthority = (data) => {
 // @Router /menu/deleteBaseMenu [post]
 export const deleteBaseMenu = (data) => {
   return service({
-    url: '/menu/deleteBaseMenu',
+    url: '/menu/delete',
     method: 'post',
     data
   })

@@ -27,14 +27,14 @@
               type="primary"
               link
               icon="edit"
-              @click="editMenu(scope.row.ID)"
+              @click="editMenu(scope.row.id)"
             >编辑</el-button>
             <el-button
               size="small"
               type="primary"
               link
               icon="delete"
-              @click="deleteMenu(scope.row.ID)"
+              @click="deleteMenu(scope.row.id)"
             >删除</el-button>
           </template>
         </el-table-column>
@@ -268,6 +268,15 @@ const getTableData = async() => {
   const table = await getMenuList({ pageNum: page.value, pageSize: pageSize.value, ...searchInfo.value })
   if (table.code === 200) {
     tableData.value = table.data
+    tableData.value.forEach(i => {
+      i.path = i.menuUri
+      i.component = `view/${i.menuUri}/index.vue`
+      i.meta = {
+        title: i.name,
+        keepAlive: true
+      }
+      i.name = i.menuUri
+    })
     // total.value = table.data.total
     // page.value = table.data.page
     // pageSize.value = table.data.pageSize
@@ -339,14 +348,15 @@ const handleClose = (done) => {
   done()
 }
 // 删除菜单
-const deleteMenu = (ID) => {
+const deleteMenu = (id) => {
+  debugger
   ElMessageBox.confirm('此操作将永久删除所有角色下该菜单, 是否继续?', '提示', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
     type: 'warning'
   })
     .then(async() => {
-      const res = await deleteBaseMenu({ ID })
+      const res = await deleteBaseMenu({ id })
       if (res.code === 200) {
         ElMessage({
           type: 'success',

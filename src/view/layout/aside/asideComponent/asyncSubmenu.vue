@@ -47,7 +47,6 @@ const props = defineProps({
     type: Object
   }
 })
-
 const activeBackground = ref(props.theme.activeBackground)
 const activeText = ref(props.theme.activeText)
 const normalText = ref(props.theme.normalText)
